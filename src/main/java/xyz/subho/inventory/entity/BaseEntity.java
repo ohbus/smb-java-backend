@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import xyz.subho.inventory.utilities.Utility;
 
 import javax.persistence.*;
@@ -17,26 +21,32 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BaseEntity implements Serializable {
 
-    @Id
+    private static final long serialVersionUID = -264634372901881203L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private LocalDateTime updatedAt;
+    @LastModifiedDate
+    private Long updatedAt;
 
     @Basic
     @Column(length = 30)
+    @LastModifiedBy
     private String updatedBy;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @CreatedDate
+    private Long createdAt;
 
     @Basic
     @Column(length = 30)
+    @CreatedBy
     private String createdBy;
 
     @Basic
     @Column(nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = Boolean.FALSE;
 
     @Basic
     @Column(nullable = false)
@@ -44,40 +54,28 @@ public class BaseEntity implements Serializable {
 
     @PreUpdate
     private void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-//        this.updatedBy = this.getCurrentUser();
         this.version++;
     }
 
     @PrePersist
     private void onCreate() {
-        this.createdAt = LocalDateTime.now();
-//        this.createdBy = this.getCurrentUser();
         this.deleted = false;
         this.version = 1;
     }
 
-//    private String getCurrentUser() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return (!(authentication instanceof AnonymousAuthenticationToken))
-//                ? authentication.getName()
-//                : null;
-//    }
-
-
-    public Long getUpdatedAtEpoch() {
-        return Utility.localDateTimeToEpoch(updatedAt);
+    public LocalDateTime getUpdatedAtEpoch() {
+        return Utility.epochToLocalDateTime(updatedAt);
     }
 
-    public void setUpdatedAtEpoch(Long updatedAt) {
-        this.updatedAt = Utility.epochToLocalDateTime(updatedAt);
+    public void setUpdatedAtEpoch(LocalDateTime updatedAt) {
+        this.updatedAt = Utility.localDateTimeToEpoch(updatedAt);
     }
 
-    public Long getCreatedAtEpoch() {
-        return Utility.localDateTimeToEpoch(createdAt);
+    public LocalDateTime getCreatedAtEpoch() {
+        return Utility.epochToLocalDateTime(createdAt);
     }
 
-    public void setCreatedAtEpoch(Long createdAt) {
-        this.createdAt = Utility.epochToLocalDateTime(createdAt);
+    public void setCreatedAtEpoch(LocalDateTime createdAt) {
+        this.createdAt = Utility.localDateTimeToEpoch(createdAt);
     }
 }

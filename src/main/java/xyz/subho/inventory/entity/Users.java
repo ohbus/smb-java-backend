@@ -2,6 +2,7 @@ package xyz.subho.inventory.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.hibernate.annotations.Filter;
@@ -20,6 +21,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @With
+@EqualsAndHashCode(callSuper = true)
 @SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
 @FilterDef(
         name = "deletedUserFilter",
@@ -32,7 +34,9 @@ import java.io.Serializable;
                 @Index(name ="emailIdx", columnList = "email", unique = true)})
 public class Users extends BaseEntity implements Serializable {
 
-    @Column(nullable = false, length = 30)
+    private static final long serialVersionUID = 7184734301742773559L;
+
+	@Column(nullable = false, length = 30)
     private String firstName;
 
     @Column(nullable = false, length = 30)
